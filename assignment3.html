@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assignment 3 - CSSE1001 Semester 1, 2017</title>
+</head>
+<!-- LaTeX? More like LaMeTeX -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+<link rel="stylesheet"
+      href="http://materializecss.com/css/ghpages-materialize.css">
+
+<style>
+    header, main, footer {
+        padding: 0;
+    }
+
+    h2 {
+        font-size: 3.026rem
+    }
+
+    h3 {
+        font-size: 2.482rem;
+    }
+
+    h4 {
+        font-size: 1.938rem;
+    }
+
+    .mark-breakdown tbody tr.task th em {
+        font-weight: normal;
+    }
+
+    .mark-breakdown tbody tr.task th {
+        text-align: center;
+        /*display: inline-block;*/
+    }
+
+    .mark-breakdown tbody tr.task {
+        border-top: 1px solid #d0d0d0;
+    }
+
+    .mark-breakdown thead tr th {
+        text-align: center;
+    }
+
+    tbody tr td {
+        padding: 0.8em;
+    }
+
+    h2, h3, h4, h5, h6 {
+        padding-top: 1.5rem;
+    }
+
+    .highlight-changes [data-version="1.1.2"] {
+        background-color: #e69bc6;
+    }
+
+    .highlight-changes [data-version="1.1.1"] {
+        background-color: #e6b49c;
+    }
+
+    .highlight-changes [data-version="1.1.0"] {
+        background-color: #B1D3E6;
+    }
+
+    .highlight-changes [data-version="1.0.1"] {
+        background-color: #E6E5B1;
+    }
+
+    ul.browser-default {
+        padding-left: 2rem;
+    }
+
+    ul.browser-default li {
+        list-style-type: initial;
+    }
+
+    .container p {
+        text-align: justify;
+    }
+
+    li {
+        margin-bottom: 0.8em;
+    }
+
+    pre {
+        white-space: pre-wrap; /* Since CSS 2.1 */
+        white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        word-wrap: break-word; /* Internet Explorer 5.5+ */
+    }
+
+    a[name] {
+        position: relative;
+        display: block;
+        top: -70px;
+    }
+
+    .card .card-image img {
+        width: auto;
+        margin: 0 auto;
+        max-width: 100%;
+    }
+
+    .card .card-title {
+        text-align: center;
+    }
+
+
+</style>
+
+<style media="print">
+    h2, h3, h4, h5, h6 {
+        padding-top: 0;
+    }
+
+    h1 {
+        font-size: 2.4rem;
+    }
+
+    h2 {
+        font-size: 1.7rem;
+    }
+
+    h3 {
+        font-size: 1.4rem;
+    }
+
+    h4 {
+        font-size: 1.2rem;
+    }
+
+    .highlight-changes [data-version] {
+        background-color: transparent;
+    }
+
+    #sec_change_log .input-field {
+        display: none;
+    }
+
+</style>
+
+<script src="http://code.jquery.com/jquery-2.2.4.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+<script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]], preview: "none"},
+    messageStyle: "none"
+  });
+
+
+
+
+
+
+</script>
+<script>
+    $(function () {
+        // TODO: abstract & clean up
+        // TODO: change data-number to data-id/data-ref
+        var HEADER_TAGS = 'h2, h3, h4, h5, h6';
+        var hasContents = false; // WIP
+        headers = $('.container').find(HEADER_TAGS).not('.star');
+
+        if (hasContents) {
+            // dynamically create the contents section
+            var contents = $('<section>');
+            var contentsHeader = $('<h2>').addClass('star').text('Contents');
+            contentsHeader.append($('<a>').attr('name', 'sec_contents'));
+            var contentsTable = $('<table class="contents"><thead><tr><th>Section</th><th>Topic</th></tr></thead></table>');
+
+            // add the contents to the page
+            contents.append(contentsHeader, contentsTable);
+            $('.container section').first().parent().prepend(contents);
+        }
+
+        // section i = counts[i-2]
+        counts = [0, 0, 0, 0, 0];
+
+        var i_prev = -1;
+
+        headers.each(function () {
+            var elem = $(this);
+
+            elem.data('label', elem.text());
+
+            var num = parseInt(elem[0].tagName.charAt(1), 10);
+            var i = num - 2;
+
+            if (i >= i_prev) {
+                counts[i] += 1;
+            } else {
+                for (var j = i_prev; j > i; j--) {
+                    counts[j] = 0;
+                }
+                counts[i] += 1;
+            }
+
+            header_number = counts.slice(0, i + 1);
+            number = header_number.join(".");
+
+            if (hasContents) {
+                // extract the identifier of the section
+                var identifier = elem.next('a').attr('name');
+                // add some indentation to the contents
+                var indentation = '&emsp;&emsp;&emsp;'.repeat(header_number.length - 1);
+
+                // create the table row
+                var section = $('<td class="section">' + indentation + header_number[header_number.length - 1] + '</td>');
+                var topic = $('<td>' + indentation + elem.text() + '</td>');
+                var itemIndex = $('<tr class="section-layer-' + header_number.length + '"></tr>');
+
+                // add the contents table row to the table
+                itemIndex.data('ref', identifier);
+                itemIndex.append(section, topic);
+                $('.container section').first().find('table').append(itemIndex);
+
+                // attach a click event to link to the section in the contents page
+                itemIndex.click(function () {
+                    location.hash = $(this).data('ref');
+                });
+            }
+
+            text = "<span class=\"header_number\">" + number + ".&nbsp;</span>";
+            elem.prepend(text);
+            elem.data('number', number);
+
+            i_prev = i;
+        });
+
+        function getRef(id) {
+            var label = $('a[name="' + id + '"]');
+            var header = label.prev(HEADER_TAGS);
+
+            if (label.length === 0) {
+                throw new ReferenceError("Undefined label " + id);
+            } else if (label.length > 1) {
+                throw new ReferenceError("Multiple labels defined for " + id);
+            } else {
+                return {
+                    id: header.data('number'),
+                    text: header.data('label')
+                };
+            }
+        };
+
+        // enables <a href="#sec_..."></a>
+        // and <a href="#sec_...">Section <span data-ref=""/></a>
+        $('a[href]').each(function () {
+            var $elem = $(this);
+            var tag = $elem.attr('href').replace('#', '');
+
+            if (!tag.startsWith('sec_') || $elem.hasClass('star')) {
+                return;
+            }
+
+            try {
+                var refData = getRef(tag);
+            } catch (e) {
+                return console.error(e.toString())
+            }
+
+            var $ref = $elem.find('[data-ref]');
+
+            if ($ref.length) {
+                $ref.text(refData.id);
+            } else {
+                $elem.html(refData.id + '. ' + refData.text);
+            }
+        });
+
+        // enables <span data-ref="sec_..."/>
+        $('[data-ref]').each(function () {
+            var elem = $(this);
+            var tag = elem.data('ref').replace('#', '');
+
+            if (!tag.startsWith('sec_')) {
+                return;
+            }
+
+            try {
+                var refData = getRef(tag);
+            } catch (e) {
+                return console.error(e.toString())
+            }
+
+            elem.text(refData.id);
+        });
+
+
+        $('[data-version]').each(function () {
+            var $elem = $(this);
+            var version = $elem.data('version');
+
+            $elem.attr('title', 'Changed in ' + version)
+        });
+
+        const $highlighter = $('#change_highlighting');
+        const $body = $('body');
+        const highlight_class = 'highlight-changes';
+
+        $highlighter.on('change', function (ev) {
+            ev.preventDefault();
+
+            $body.toggleClass(highlight_class)
+        });
+
+        if ($body.hasClass(highlight_class)) {
+            $highlighter.prop('checked', true);
+        } else {
+            $highlighter.removeProp('checked');
+        }
+    });
+
+
+</script>
+<body class="highlight-changes">
+
+<header class="center-align">
+    <h1 class="header">Assignment 3</h1>
+    <p>CSSE1001/7030<br>
+        Semester 1, 2017</p>
+    <p>Version 1.1.2<br>
+        20 marks / 25 marks</p>
+    <p>Due Saturday 3 June, 2017, 21:30</p>
+</header>
+
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+
+            <section>
+                <h2 class="header">Introduction</h2><a name="sec_intro"></a>
+
+                <!--TODO: reword this-->
+                <p>
+                    This assignment will use concepts taught throughout the
+                    course to extend the functionality of the provided tile
+                    based game.
+                    This assignment will ask you to extend the game with basic,
+                    intermediate and advanced features.
+                    For CSSE7030 students there will also be an open-ended
+                    component.
+                </p>
+                <p>
+                    The assignment will focus on the concept of Graphical User
+                    Interfaces (GUIs). You will be requested to implement
+                    extra functionality to the base game including extending the
+                    GUI for a better game experience.
+                </p>
+
+                <div data-version="1.1.2">
+				<p>
+					<strong>Note:</strong> There will not be a practical interview 
+					for the third assignment.
+				</p>
+				</div>
+            </section>
+
+            <section>
+                <h2 class="header">Assignment Tasks</h2><a name="sec_tasks"></a>
+
+                <h3>Task Breakdown</h3><a name="sec_task_breakdown"></a>
+
+                <p>CSSE1001 students will be marked out of 20 and CSSE7030
+                    students will be marked out of 25 based on the following
+                    breakdown. <span data-version="1.1.2">Sub-tasks/tasks may be attempted in any order.</span> </p>
+
+                <table class="mark-breakdown striped">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Sub-Task</th>
+                        <th>Marks</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Task 1 -->
+                    <tr class="task">
+                        <th rowspan="8"><span>Task 1<br><em>Basic Features</em></span>
+                        </th>
+                        <td></td>
+                        <th><strong>10 marks</strong></th>
+                    </tr>
+                    <tr>
+                        <td>App Class<br/>
+                            <!--<em>A class which will handle the basic running of the game.</em>-->
+                        </td>
+                        <td>2.5 marks</td>
+                    </tr>
+                    <tr>
+                        <td>Status Bar<br/>
+                            <!--<em>A status bar to display the score of the current game.</em>-->
+                        </td>
+                        <td>1 mark</td>
+                    </tr>
+                    <tr>
+                        <td>Logo<br/>
+                            <!--<em>Canvas to display the game logo.</em>-->
+                        </td>
+                        <td>2 marks</td>
+                    </tr>
+                    <tr>
+                        <td>Popup Dialogs</td>
+                        <td>1 mark</td>
+                    </tr>
+                    <tr>
+                        <td>File Menu</td>
+                        <td>1 mark</td>
+                    </tr>
+                    <tr>
+                        <td>Keyboard Shortcuts</td>
+                        <td>1 marks</td>
+                    </tr>
+                    <tr>
+                        <td>Lightning Button<br/>
+                            <!--<em>Buttons which correspond to game actions.</em>-->
+                        </td>
+                        <td>1.5 marks</td>
+                    </tr>
+
+                    <!-- Task 2 -->
+                    <tr class="task">
+                        <th rowspan="4"><span>Task 2<br><em>Intermediate Features</em></span>
+                        </th>
+                        <td></td>
+                        <th><strong>6 marks</strong></th>
+                    </tr>
+                    <tr>
+                        <td>Auto-Playing Game</td>
+                        <td>3 marks</td>
+                    </tr>
+                    <tr>
+                        <td>Loading Screen</td>
+                        <td>1 mark</td>
+                    </tr>
+                    <tr>
+                        <td>High Score Window</td>
+                        <td>2 marks</td>
+                    </tr>
+
+                    <!-- Task 3 -->
+                    <tr class="task">
+                        <th rowspan="3">
+                            <span>Task 3<br><em>Advanced Features</em></span>
+                        </th>
+                        <td></td>
+                        <th><strong>4 marks</strong></th>
+                    </tr>
+                    <tr>
+                        <td>Multiple Game Modes</td>
+                        <td>2 mark</td>
+                    </tr>
+                    <tr>
+                        <td>Objective Game Mode</td>
+                        <td>2 marks</td>
+                    </tr>
+
+                    <!-- Postgrad Open-ended -->
+                    <tr class="task">
+                        <th>
+                            <span>Open-Ended<br><em>CSSE7030 only</em></span>
+                        </th>
+                        <td><em>Sophisticated, additional functionality</em>.
+                        </td>
+                        <th><strong>5 marks for CSSE7030;</strong><br><strong>0
+                            marks for CSSE1001</strong></th>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <h3>Mark Breakdown</h3><a name="sec_mark_breakdown"></a>
+
+                For each task, marks will be awarded proportionately according
+                to the following breakdown.
+
+                <table class="mark-breakdown striped">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Description</th>
+                        <th>Marks</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Code Quality -->
+                    <tr class="task">
+                        <th rowspan="2"><span>Code Quality</span>
+                        </th>
+                        <td>Code is readable. Appropriate and meaningful
+                            identifier names have been used. Simple and clear
+                            code structure. Repeated code has been avoided.
+                        </td>
+                        <td><strong>10%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Code has been simplified where appropriate and is
+                            not overly convoluted.
+                        </td>
+                        <td><strong>10%</strong></td>
+                    </tr>
+
+                    <!-- Documentation -->
+                    <tr class="task">
+                        <th style="max-width: 150px">
+                            <span>Documentation</span>
+                        </th>
+                        <td>Documented clearly and concisely,
+                            without excessive or extraneous comments.
+                        </td>
+                        <td><strong>10%</strong></td>
+                    </tr>
+
+                    <!-- Functionality -->
+                    <tr class="task">
+                        <th rowspan="2">
+                            <span>Functionality</span>
+                        </th>
+                        <td>Components are functional, without major bugs or
+                            unhandled exceptions.
+                        </td>
+                        <td><strong>70%</strong></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <h3>Download the Files</h3><a name="sec_files"></a>
+                <div data-version="1.1.0">
+                    <p>
+                        Before beginning work on the assignment you must download
+                        <a href="https://csse1001.uqcloud.net/assignments/assignment3/a3_files.zip"><code>a3_files.zip</code></a>
+                        provided from the course website.
+                    </p>
+                    <p>
+                        Inside <a href="https://csse1001.uqcloud.net/assignments/assignment3/a3_files.zip"><code>a3_files.zip</code></a>,
+                        there should be a file called <code>a3.py</code>. This is the file where you will write your
+                        assignment.
+                        The other files are support files. These <strong>must not</strong> be edited. Their purpose is
+                        explained below.
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="header">Support Code</h2><a name="sec_support"></a>
+
+                <p>You have been supplied with a large amount of support code to
+                    help you complete this assignment. To begin the assignment,
+                    you do not need to understand much of this code. As you
+                    progress through the tasks, the degree to which you
+                    should understand this code will increase.</p>
+
+                <table class="mark-breakdown striped">
+                    <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Description</th>
+                        <th>Understanding</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th>a3.py</th>
+                        <td>Main assignment file.</td>
+                        <td>Task 1</td>
+                    </tr>
+                    <tr>
+                        <th>play_game.py</th>
+                        <td>Plays a game of Lolo.</td>
+                        <td>Task 1</td>
+                    </tr>
+                    <tr>
+                        <th>game_*.py</th>
+                        <td>Concrete modelling & app classes for each game
+                            mode.
+                        </td>
+                        <td>Task 1: Simple<br>Task 3: Solid</td>
+                    </tr>
+                    <tr>
+                        <th>colours.py</th>
+                        <td>Mappings of colour names to codes.</td>
+                        <td>Task 1</td>
+                    </tr>
+                    <tr>
+                        <th>highscores.py</th>
+                        <td>High score management.</td>
+                        <td>Task 2</td>
+                    </tr>
+                    <tr>
+                        <th>view.py</th>
+                        <td>GridView widget.</td>
+                        <td>Task 2</td>
+                    </tr>
+                    <tr>
+                        <th>model.py</th>
+                        <td>Abstract modelling classes.</td>
+                        <td>Task 3</td>
+                    </tr>
+                    <tr>
+                        <th>tile_generators.py</th>
+                        <td>Concrete tile generator classes.</td>
+                        <td>Task 3</td>
+                    </tr>
+                    <tr>
+                        <th>modules/</th>
+                        <td>Third-party libraries.</td>
+                        <td>Task 3</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <p><strong>*Note: </strong>Ideally, each game type would be in a
+                    subdirectory called <code>game</code>, without the <code>game_</code>
+                    prefix. However, this would add complixity for managing this, so the
+                    prefix was chosen instead for simplicity.</p>
+
+                <h3>Event Listeners</h3><a name="sec_events"></a>
+                <blockquote><strong>Note: </strong>In this section, the word
+                    function is used to mean anything that is able to be called
+                    like a function, such as a method, a lambda, etc.
+                </blockquote>
+                <p>
+
+                    The *Game classes (<code>AbstractGame</code> and its
+                    subclasses) and the <code>GridView</code>
+                    class follow a pattern which allows you to attach a function
+                    to be called when an event is triggered. This can be
+                    referred to as binding to or listening for an event.
+                </p>
+                <p>
+                    This pattern is called the Event Emitter pattern, and is an
+                    implementation of the Observer pattern (the
+                    Publisher/Subscriber pattern is similar).
+                </p>
+                <p>
+                    While it is also quite a similar approach to how Tkinter
+                    handles
+                    commands for button presses, the Event Emitter pattern is
+                    far more flexible in general.
+
+                </p>
+                <p>
+                    The events that games and grid views emit
+                    are useful in completing the assignment.
+                    For task 1 you should consider listening for the select
+                    event to appropriately update the score.
+                    Postgraduate students are encouraged to consider emitting
+                    their own events.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="header">Task 1 &mdash; Basic GUI</h2><a
+                    name="sec_task1"></a>
+
+                <p>
+                    The purpose of this task is to create the basic graphical
+                    user interface (GUI) for the Lolo game. You may choose any
+                    <strong>one</strong> of the supplied games (Regular, Make 13, Lucky 7, Unlimited).
+                    There are several sub-tasks that need to be completed for
+                    this task. You will be working towards
+                    creating the user interface demonstrated below.
+                </p>
+                <div class="card">
+                    <div class="card-image">
+
+                        <img src="images/example_basic_gui.png"/>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">Basic GUI Example</span>
+                    </div>
+                </div>
+
+                <h3>Basic GUI</h3><a name="sec_app"></a>
+
+                <p>
+                    The very first part of this task is to implement a class for
+                    the basic GUI. This class should be named
+                    <code>LoloApp</code> and
+                    should inherit from <code>BaseLoloApp</code>. The <code>BaseLoloApp</code>
+                    class provides some support code to simplify the complex
+                    process of animating.
+                </p>
+
+                <div data-version="1.1.0">
+                    <p>The title of the window should be set to something appropriate (i.e. <code>Lolo ::
+                        {game_mode_name}
+                        Game</code>). This also applies to any window in subsequent tasks.</p>
+                </div>
+                <p>
+
+                    As the basic GUI is improved in subsequent tasks, <strong>the
+                    LoloApp class will need to be modified accordingly</strong>.
+                </p>
+
+
+                <h3>Status Bar</h3><a name="sec_status_bar"></a>
+
+                <p>
+                    Define a class named <code>StatusBar</code>, which inherits
+                    from <code>tk.Frame</code>.
+                    This class must display <span data-version="1.0.1">two</span> labels, with the
+                    following text and alignment:
+                </p>
+                <ul class="browser-default">
+                    <li><code>{game_mode_name} <span data-version="1.1.2">Mode</span></code> <em>(Left)</em><br>
+                        The name of whichever game mode the player is currently
+                        playing. <span data-version="1.1.0">See <code>AbstractGame.get_name</code>.</span>
+                    </li>
+                    <li><code>Score: {score}</code> <em>(Right)</em><br>
+                        Must be updated whenever the player's score changes.
+                    </li>
+                </ul>
+
+                <p><strong>Note: </strong> For convenience, you should have
+                    <span data-version="1.0.1">two</span> methods, one for each
+                    of the relevant labels:
+                    <code>set_game(game_mode)</code> &amp; <code>set_score(score)</code>.
+                </p>
+
+                <h3>Logo</h3><a name="sec_lolo_logo"></a>
+
+                <p>
+                    Define a class named <code>LoloLogo</code>, which inherits
+                    from <code>tk.Canvas</code>. This class must draw a simple logo,
+                    similar to the one seen in examples, made out of canvas
+                    shapes. It does not need to be resizable.
+                </p>
+
+                <p>You are encouraged to extend on the complexity of the design
+                    but no extra marks will be awarded.
+                </p>
+
+                <h3>File Menu</h3><a name="sec_menu"></a>
+
+                <p>
+                    Implement a menu bar, with a <code>File</code> menu. The
+                    File menu should have the following entries:
+                </p>
+                <ul class="browser-default">
+                    <li><code>New Game</code>: Restarts the game.</li>
+                    <li><code>Exit</code>: Exits the application.</li>
+                </ul>
+
+                <p><strong>Note:</strong> On Mac OS X, this should appear in the
+                    global menu bar (top of the screen).</p>
+
+                <h3>Dialog</h3><a name="sec_dialog"></a>
+
+                <p>
+                    Implement the following dialog boxes:
+                </p>
+
+                <ul class="browser-default">
+                    <li>Invalid Activation: If the user attempts to activate a
+                        tile that cannot be activated, show an error dialog with
+                        an appropriate message.
+                    </li>
+                    <li>Game Over: When the game ends, show a dialog informing
+                        the user of their score.
+                    </li>
+                </ul>
+
+                <h3>Lightning Button</h3><a name="sec_zap_btn"></a>
+
+                <div data-version="1.1.0">
+                    <p>When the lightning ability is active and the user selects a tile, instead of being joined with
+                        the surrounding tiles, it should be deleted from the game grid. Doing so uses one lightning.</p>
+
+                    <p>Place the lightning button below the <code>GridView</code>. When pressed, this button should
+                        toggle the lightning ability<span data-version="1.1.2">. If the user does not have any lightning available, this button should be
+                            disabled</span>. When the lightning ability is active, the button's text should indicate
+                        this to the
+                        user. It should also include the number of lightning the user has remaining.</p>
+
+                    <p>At the beginning of a game, the user should receive one lightning. Every so often, the user
+                        should gain one lightning. This could be implemented in a variety of ways, some more interesting
+                        than
+                        others, such as:</p>
+
+                    <ul class="browser-default">
+                        <li>Fixed number of turns (i.e. every 20 turns)</li>
+                        <li>Randomly (i.e. there is a 5% chance of the user gaining a lightning each turn)</li>
+                        <li>Increasing number of turns (i.e. 5, 10, 20, 40, etc. - $5 \times 2^i$)</li>
+                        <li><em>etc.</em></li>
+                    </ul>
+
+                    <blockquote><code>BaseLoloApp.remove</code> facilitates the proper removal of tiles at arbitrary
+                        position(s), similar to <code>BaseLoloApp.activate</code>.
+                    </blockquote>
+
+                    <blockquote>
+                        <div data-version="1.1.2">Note: For usability, it is recommended to automatically disable the
+                            lightning ability after the user removes a tile from the grid.
+                        </div>
+                    </blockquote>
+                </div>
+
+                <h3>Keyboard Shortcuts</h3><a name="sec_keyboard"></a>
+
+                <p>
+                    Implement the following keyboard shortcuts:
+                </p>
+
+                <ul class="browser-default">
+                    <li><code>ctrl + n</code>: Start new game.</li>
+                    <li><code>ctrl + l</code>: <span data-version="1.1.2">Activates the lightning ability.</span>
+                    </li>
+                </ul>
+
+                <p><strong>Note:</strong> Ideally, <code>cmd</code>
+                    would be used on Mac instead of <code>ctrl</code>.
+                    It is permitted to also
+                    bind to <code>cmd</code> on Mac, however <code>ctrl</code>
+                    must also be implemented.</p>
+
+            </section>
+
+            <section>
+                <h2 class="header">Task 2 &mdash; Intermediate Features</h2><a
+                    name="sec_task2"></a>
+
+                <p>The purpose of this task is to extend the functionality of
+                    the basic GUI by adding a loading screen and high score
+                    window.</p>
+
+                <p>Instead of the basic GUI, the loading screen should be
+                    displayed upon launching the game.</p>
+
+                <div class="card">
+                    <div class="card-image">
+
+                        <img src="images/example_loading.png"/>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">Loading Screen Example</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-image">
+                        <img src="images/example_high_scores.png"/>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title">High Scores Window Example</span>
+                    </div>
+                </div>
+
+                <h3>Auto-Playing Game</h3><a name="sec_autoplaying_game"></a>
+
+                <p>Implement a class, <code>AutoPlayingGame</code>, which
+                    inherits from <code>BaseLoloApp</code>. This class must be
+                    able to display either a static or automatically played game.
+                </p>
+                <blockquote><strong>Hint: </strong> this can be achieved by
+                    initially displaying a static representation of the game,
+                    and implementing a method that begins the game playing.
+                </blockquote>
+
+                <p>The player should not be able to interact with this class. For
+                    automatically played games, a random valid tile should be
+                    chosen each move, and the game should restart after the game
+                    ends.</p>
+
+
+                <blockquote>
+                    <div data-version="1.1.2">
+                        <p><strong>Hint: </strong> For repeatedly moving, a loop will interfere with Tkinter's mainloop. <code>AbstractGame</code>'s <code>resolve</code> event is emitted once a move is resolved (i.e. when the animation is completed), before the <code>game_over</code> event. Consider listening to it and performing the next move after a short delay. See <code>BaseLoloApp.bind_events</code>.</p>
+                        <p>Note: Because <code>resolve</code> is emitted before <code>game_over</code>, if you wish to move immediately and without any delay, you must use <code>.after</code> with a delay of 0.</p>
+                    </div>
+                </blockquote>
+
+                <h3>Loading Screen</h3><a name="sec_loading_screen"></a>
+
+                <p>The loading screen must be the first thing the player sees
+                    when they start the game. It must contain all of the
+                    components from the example above. You may lay them out
+                    however you wish, provided it is reasonable.</p>
+
+                <p>Required components:</p>
+                <ul class="browser-default">
+                    <li><strong>Logo:</strong> Should be reused from task 1 (see
+                        <a href="#sec_lolo_logo">4.3 Logo</a>).
+                    </li>
+                    <li><strong>Buttons:</strong> Play Game, Exit Game, High
+                        Scores (performing the appropriate action). Others
+                        may be added during <a href="#sec_task3">Task 3</a> and
+                        <a href="#sec_postgrad">Open-Ended Task</a>.
+                    </li>
+                    <li><strong>Name Entry:</strong> For recording high scores.</li>
+                    <li><strong>Auto Playing Game:</strong> Randomly playing a
+                        game (see <a href="#sec_autoplaying_game">auto-playing game</a> above).
+                    </li>
+                </ul>
+
+                <h3>High Score Window</h3><a name="sec_high_score_window"></a>
+
+                <p>The high score window should be displayed in a separate
+                    window to the main application. It can be accessed
+                    through the button on the loading screen, or through the
+                    file menu (a new entry must be added).</p>
+
+                <p>The high score window contains all of the
+                    components from the example above, laid out as shown.</p>
+
+                <p>Required components:</p>
+                <ul class="browser-default">
+                    <li><strong>Best Player:</strong> Display the name, score,
+                        and a static visual representation of how their game
+                        ended (see <a href="#sec_autoplaying_game">Auto-Playing Game</a> above).
+                    </li>
+                    <li><strong>Text Leaderboard:</strong> display a row of text
+                        with the player's name and score for each player on the
+                        leaderboard. Name and score should be left-aligned and
+                        right-aligned respectively
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="header">Task 3 &mdash; Advanced Features</h2><a
+                    name="sec_task3"></a>
+
+                <h3>Multiple Game Modes</h3><a
+                    name="sec_multiple_game_modes"></a>
+
+                <p>On the loading screen, add a <code>Game Mode</code> button
+                    underneath <code>New Game</code>. When pressed, this should
+                    open a window that allows the user to choose the game mode.
+                    If the user hasn't entered their name yet, they should be
+                    prompted with a dialog box.
+                </p>
+
+                <p>The window must have a series of <code>Radiobuttons</code>,
+                    one for each available game mode, with the current game mode
+                    pre-selected. It must also contain a visual example and
+                    the name of the currently selected game mode. The visual example
+                    must update whenever a <code>Radiobutton</code> is selected.
+                    For the visual example, <code>AutoPlayingGame</code>
+                    can be reused here.</p>
+
+                <p>Modify <code>New Game</code> so that it
+                    starts a game of the currently selected mode.</p>
+
+                <p>Initially, your application must include all of the provided
+                    game types (Regular, Make 13, Lucky 7, <span data-version="1.1.0">Unlimited</span>). Any additional
+                    game types added must also be included (see <a href="#sec_objective_game_modes">objective game
+                        mode</a>
+                    and <a href="#sec_postgrad">open-ended task</a> below).
+                </p>
+
+                <h3>Objective Game Mode</h3><a
+                    name="sec_objective_game_modes"></a>
+
+                <p>An objective game mode is an extension of the regular game mode,
+                    in which the player has a number of tiles as objectives.
+                    <span data-version="1.1.2">The objectives are not a part of the game grid, but should be displayed in
+                        their own widget above the game grid.</span></p>
+
+                <p>The player's goal is to join tiles to eliminate each objective tile.
+                    For each objective tile, the player must form a tile with the
+                    same type and with at least the value of the objective. Once
+                    this happens, the objective tile is eliminated, and tile that
+                    was joined should be removed from the game grid.</p>
+
+                <p>The player may eliminate objective tiles in any order. The
+                    game is won only if they eliminate all objectives before the
+                    move limit is reached.</p>
+
+                <p>Objective game modes should be able to be loaded from a
+                    <code>JSON</code>
+                    file in the following format:</p>
+
+                <p><span data-version="1.1.2">The objectives and number of moves remaining should be displayed above the game grid (i.e. in the <code>StatusBar</code>).</span></p>
+
+                <pre>
+{
+    "mode": "objective",
+    "min_group": 3, // the minimum number of tiles to form a group
+    "types": 4, // the number of tile types
+    "size": [6, 6], // the number of [rows, columns]
+    "starting_grid": ..., // optionally defines the starting grid
+    "objectives": [...], // a representation of the objective tiles
+    "limit": 90, // the number of moves the user can make
+}
+                </pre>
+
+                <p>The game grid should be randomly generated unless the <code>starting_grid</code>
+                    key is present. For <code>starting_grid</code> & <code>objectives</code>,
+                    it may be useful to use a similar representation as <code>HighScoreManager</code>
+                    does (see <code>highscores.json</code>).</p>
+
+            </section>
+
+            <section>
+                <h2 class="header">Open-Ended &mdash; CSSE7030
+                    Only</h2><a name="sec_postgrad"></a>
+
+                <p>This task is only required for CSSE7030 students. CSSE1001
+                    students are permitted to attempt this task, but
+                    will be not be awarded marks for it.</p>
+                <p>
+                    This task is open ended. It is up to you to decide what to
+                    do for this task.
+                    Marks will be awarded based on the sophistication of the
+                    features you choose to implement.
+                    Ensure that you consult with course staff before you
+                    commence this task to ensure that the features are
+                    sufficiently sophisticated.
+                </p>
+                <p>
+                    You are encouraged to utilize extra Python modules to help
+                    you implement your desired functionality.
+                </p>
+
+                <p>
+                    You must also submit a brief PDF
+                    describing the features you have implemented for this task,
+                    named <code>description.pdf</code>.
+                    <strong>This file must be in PDF format; marks will be deducted if
+                        you submit another format</strong> (such as .txt or .docx, for example).
+                    This file should also contain an outline of any third party
+                    Python modules you have used, and instructions on how to
+                    install them. For example if you have used Pillow module, then the
+                    following would be sufficient:
+                </p>
+
+                <blockquote>Install the Pillow module with pip using the
+                    command:<br>
+                    <code>pip install Pillow</code>
+                </blockquote>
+
+                <span data-version="1.1.2">It is also helpful to provide information on the specific version of any third-party libraries used.</span>
+
+                <h3>Suggestions</h3><a name="sec_suggestions"></a>
+
+                <ul class="browser-default">
+                    <li>Saving and loading a game</li>
+                    <li>Background music/event sounds</li>
+                    <li>Additional custom game modes</li>
+                    <li>Various animations</li>
+                    <li>Multiplayer (local or network)</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="header">Assignment Submission</h2><a
+                    name="sec_submission"></a>
+
+                <p>Your assignment must be submitted via the assignment three
+                    submission link on Blackboard.
+
+                    You must submit a zip file, <code>a3.zip</code>,
+                    containing <code>a3.py</code> and all the files required to
+                    run your application (excluding the support code). <strong>You should not have
+                        made modifications to any of the support files</strong>. If you are a CSSE7030
+                    student, this zip file must also contain your <code>description.pdf</code> file.
+                </p>
+
+                <p>
+                    Late submission of the assignment will <strong>not</strong> be accepted. In
+                    the event of exceptional circumstances, you may submit a request for an extension.
+                </p>
+
+                <p>
+                    All requests for extension must be submitted on the UQ
+                    Application for Extension of Progressive Assessment form:
+                    <a href="http://www.uq.edu.au/myadvisor/forms/exams/progressive-assessment-extension.pdf">http://www.uq.edu.au/myadvisor/forms/exams/progressive-assessment-extension.pdf</a>
+                    <strong>at least 48 hours prior</strong> to the submission
+                    deadline. The application and supporting documentation must be
+                    submitted to the ITEE Coursework Studies office (78-425) or
+                    by email to <a href="mailto:enquiries@itee.uq.edu.au">enquiries@itee.uq.edu.au</a>.
+                </p>
+            </section>
+
+            <section id="sec_change_log">
+                <h2 class="star">Change Log</h2>
+
+                <div class="input-field">
+                    <input id="change_highlighting" type="checkbox" class="filled-in">
+                    <label for="change_highlighting">Toggle Change Highlighting</label>
+                </div>
+
+                <br>
+
+                <p><span data-version="1.0.1">Version 1.0.1 - May 12</span></p>
+                <ul class="browser-default">
+                    <li><a href="#sec_status_bar">Status Bar</a>: Fixed typo to indicate that
+                        only the two indicated labels are required.
+                    </li>
+                    <li><a href="#sec_high_score_window">High Score Window</a>: Fixed typo that repeated the
+                        required components from <a href="#sec_loading_screen">loading screen</a>.
+                    </li>
+                </ul>
+
+                <p><span data-version="1.1.0">Version 1.1.0 - May 18 (formerly 1.0.2)</span></p>
+                <ul class="browser-default">
+                    <li><a href="#sec_app">Basic GUI</a>: Mandated window title.</li>
+                    <li><p><a href="#sec_zap_btn">Lightning button</a></p>
+                        <ul class="browser-default">
+                            <li>Expanded requirements for lightning button.</li>
+                            <li>Added <code>BaseLoloApp.remove</code> to aid in implementing lightning button.
+                            <li>Updated screenshot of Basic GUI Example to include lightning button.</li>
+                        </ul>
+                    </li>
+                    <li>Replaced error dialog logic in <code>BaseLoloApp.activate</code>
+                        with raising of <code>IndexError</code> (error dialog
+                        logic must be implemented by students in <code>LoloApp.activate</code>).
+                    </li>
+                    <li>Decreased the default tile size of <code>GridView</code>
+                        to accommodate smaller screen sizes.
+                    </li>
+                    <li>Added the <code>get_name</code> method to <code>AbstractGame</code>
+                        and its subclasses to simplify retrieval of the name of
+                        a game (see <a href="#sec_status_bar">status bar</a>).
+                    </li>
+                    <li>Replaced <code>increase_score</code> method of <code>AbstractGame</code> with
+                        <code>set_score</code> method.
+                    </li>
+                </ul>
+
+                <p><span data-version="1.1.1">Version 1.1.1 - May 20</span></p>
+                <ul class="browser-default">
+                    <li>Fixed missing internal links.
+                    </li>
+                </ul>
+
+                <p><span data-version="1.1.2">Version 1.1.2 - May 28 <!--Une journée fantastique!--></span></p>
+                <ul class="browser-default">
+                    <li>Fixed typos:
+                        <ul class="browser-default">
+                            <li><code>BaseLoloApp.score</code>: Docstring & parameter name</li>
+                            <li><code>LoloGrid.find_connected, .find_all_connected, AbstractGame.find_group,
+                                .find_groups</code>: Return/yield type in docstring
+                            </li>
+                            <li>Corrected inconsistency with Game/Mode between description & example in <a
+                                    href="#sec_status_bar">status bar</a></li>
+                            <li>Removed irrelevant examples from <a href="#sec_suggestions">suggestions</a></li>
+                        </ul>
+                    </li>
+                    <li>Clarifications:
+                        <ul class="browser-default">
+                            <li>Intention of <a href="#sec_zap_btn">Lightning Button</a>, also in <a
+                                    href="#sec_keyboard">keyboard shortcuts</a></li>
+                            <li>Intention of <a href="#sec_objective_game_modes">Objective Game Mode</a></li>
+                            <li>Recommended version information for third-party libraries in <a href="#sec_postgrad">CSSE7030
+                                task</a></li>
+                            <li>Moved <a href="#sec_zap_btn">lightning button</a> after <a href="#sec_dialog">dialog</a></li>
+                        </ul>
+                    </li>
+                    <li>Added score reset to <code>AbstractGame.reset</code></li>
+                    <li>Added <code>AbstractGame.de/serialize</code></li>
+                    <li>Fixed bug in <code>Lucky7Game</code> that unlocked max tile</li>
+                    <li>Documented <code>AbstractGame</code>'s <code>resolve</code> event in <a href="#sec_autoplaying_game"></a></li>
+                </ul>
+
+                <blockquote>
+                    <strong>Note:</strong> No further breaking changes will be made to the support code after 1.1.0 (except
+                    for bug fixes).
+                </blockquote>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+</body>
+
+<!--Holy sheet, this is a big document!-->
+
+</html>

@@ -1,0 +1,8 @@
+{
+    "mode": "objective",
+    "min_group": 3,
+    "types": 6,
+    "sizex": 10,
+    "sizey": 10,
+    "limit": 90
+}
