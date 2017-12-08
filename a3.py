@@ -19,8 +19,7 @@ from game_lucky7 import Lucky7Game
 from game_unlimited import UnlimitedGame
 from highscores import HighScoreManager
 
-__author__ = "<Weiye Zhao>"
-__email__ = "<weiye.zhao@uqconnect.edu.au>"
+__author__ = "<Wayne>"
 
 __version__ = "1.1.2"
 
